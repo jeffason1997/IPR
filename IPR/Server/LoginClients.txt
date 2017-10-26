@@ -1,0 +1,3 @@
+{
+	"combinations":[{"username":"Robbel","password":"password"}, {"username":"Test","password":"test123"}]
+}
