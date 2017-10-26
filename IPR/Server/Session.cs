@@ -161,7 +161,7 @@ namespace IPR
                 }
                 else if (jsonObject.id == "doctor/sessions")
                 {
-                    //SessionList();
+                    SessionList();
                 }
                 else if (jsonObject.id == "doctor/training/start")
                 {
@@ -276,6 +276,37 @@ namespace IPR
                 Send(JsonConvert.SerializeObject(Commands.LoginResponse("error")));
             }
         }
+
+        //Return list with active sessions to doctor
+        #region
+        public void SessionList()
+        {
+            if (!IsDoctor)
+            {
+                Console.WriteLine("No permission");
+                NoPermission("doctor/sessions");
+            }
+            else
+            {
+                List<Session> sessions = ServerProgram.GetAllPatients();
+                List<string> sessionNames = new List<string>();
+                foreach (Session s in sessions)
+                {
+                    sessionNames.Add(s.Username);
+                }
+                dynamic response = new
+                {
+                    id = "doctor/sessions",
+                    data = new
+                    {
+                        sessions = sessionNames.ToArray()
+                    }
+                };
+                Console.WriteLine(JsonConvert.SerializeObject(response));
+                Send(JsonConvert.SerializeObject(response));
+            }
+        }
+        #endregion
 
         public void CheckDoctorCredentials(string username, string password)
         {
