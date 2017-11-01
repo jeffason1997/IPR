@@ -14,26 +14,30 @@ namespace Client
     public partial class FormBikeControl : Form
     {
         private string _com = "SIM";
-        public FormBikeControl()
+        private ClientConnection _con;
+
+        public FormBikeControl(ClientConnection con)
         {
             InitializeComponent();
-            comboBox1.Items.Add("SIM");
+            _con = con;
+            comPortComboBox.Items.Add("SIM");
             string[] coms = SerialPort.GetPortNames();
             foreach (string port in coms)
             {
-                comboBox1.Items.Add(port);
+                comPortComboBox.Items.Add(port);
             }
+            
         }
 
         private void comboBox1_SelectedIndexChanged_1(object sender, EventArgs e)
         {
-            _com = comboBox1.SelectedItem.ToString();
+            _com = comPortComboBox.SelectedItem.ToString();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("The com port is:" + _com);
-            new ClientForm().Show();
+            //Console.WriteLine("The com port is:" + _com);
+            new ClientForm(_con).Show();
             this.Hide();
         }
 
@@ -47,6 +51,21 @@ namespace Client
             base.OnFormClosing(e);
             e.Cancel = true;
             this.Hide();
+        }
+
+        private void ageTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) &&
+                (e.KeyChar != '.'))
+            {
+                e.Handled = true;
+            }
+
+            // only allow one decimal point
+            if ((e.KeyChar == '.') && ((sender as TextBox).Text.IndexOf('.') > -1))
+            {
+                e.Handled = true;
+            }
         }
     }
 }

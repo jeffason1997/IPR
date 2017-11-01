@@ -26,9 +26,10 @@ namespace Docter
         Boolean isConnected;
         private DocterForm DForm;
 
-        public DocterApplication_Connection(DocterForm application)
+
+        public DocterApplication_Connection(string user, string password)
         {
-            DForm = application;
+
             bool ipIsOk = IPAddress.TryParse("127.0.0.1", out localhost);
             if (!ipIsOk) { Console.WriteLine("ip adres kan niet geparsed worden."); Environment.Exit(1); }
 
@@ -43,6 +44,7 @@ namespace Docter
             isConnected = true;
             Thread read = new Thread(Read);
             read.Start();
+            sendLogin(user, password);
         }
 
         //Read from Server
@@ -113,16 +115,25 @@ namespace Docter
         {
 
             dynamic jsonData = JsonConvert.DeserializeObject(information);
-            Console.WriteLine(jsonData.id);
+            //Console.WriteLine(jsonData.id);
             if (jsonData.id == "doctor/sessions")
             {
-                
+
                 List<String> connected_Sessions = new List<string>();
                 foreach (dynamic d in jsonData.data.sessions)
                 {
                     connected_Sessions.Add((string)d);
                 }
                 DForm.UpdateComboBox(connected_Sessions);
+            }
+            else if (jsonData.id == "doctor/Client")
+            {
+                Console.WriteLine(jsonData);
+                string user = (string)jsonData.data.username;
+                int age = (int)jsonData.data.age;
+                Sex sex = jsonData.data.sex;
+                ClientInfo tempInfo = new ClientInfo(user, age, sex);
+                DForm.updateClientInfo(tempInfo);
             }
             else if (jsonData.id == "data")
             {
@@ -189,14 +200,29 @@ namespace Docter
                 }
 
             };
-
             Send(JsonConvert.SerializeObject(sendLogin));
+        }
+        #endregion
+
+        //Get ClientInfo
+        #region
+        public void getClientInfo(string username)
+        {
+            dynamic getInfo = new
+            {
+                id = "session/getClientInfo",
+                data = new
+                {
+                    username = username
+                }
+            };
+            Send(JsonConvert.SerializeObject(getInfo));
         }
         #endregion
 
         //Start training from client
         #region
-        public void startTraining(String patientID)
+        public void startTraining(string patientID)
         {
             dynamic startTraining = new
             {
@@ -271,7 +297,7 @@ namespace Docter
 
         //Set power from client
         #region
-        public void setPower(string power, String patientID)
+        public void setPower(string power, string username)
         {
             dynamic setPower = new
             {
@@ -279,7 +305,7 @@ namespace Docter
                 data = new
                 {
                     power = power,
-                    patientID = patientID
+                    patientID = username
                 }
 
             };
@@ -300,20 +326,7 @@ namespace Docter
         }
         #endregion
 
-        //Get users from server
-        #region
-        public void GetUsers()
-        {
-            dynamic request = new
-            {
-                id = "doctor/sessions/users"
-            };
-            Send(JsonConvert.SerializeObject(request));
-        }
-        #endregion
-
-        
-        //Folow patient
+        //Follow patient
         #region
         public void FollowPatient(string SessionId)
         {
@@ -350,7 +363,7 @@ namespace Docter
         #region
         public void close()
         {
-            if (_SSL)
+            if (!_SSL)
             {
                 _stream.Close();
             }

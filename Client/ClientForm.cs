@@ -12,15 +12,23 @@ namespace Client
 {
     public partial class ClientForm : Form
     {
-        public ClientForm()
+        private ClientConnection _con;
+        public ClientForm(ClientConnection con)
         {
             InitializeComponent();
+            _con = con;
         }
 
         private void bikeConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            new FormBikeControl().Show();
+            new FormBikeControl(_con).Show();
             this.Hide();
+        }
+
+        private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _con.close();
+            Application.Exit();
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Docter
         private Session UsingClient;
         public ClientList UsingClientList { get; set; }
         private IConnector _conn;
-        private FormBikeControl BikeControl = new FormBikeControl();
+        private FormBikeControl BikeControl = new FormBikeControl(null);
         private string currentSessionID;
         private bool _keepSessionGoing;
         private DocterApplication_Connection connection;
@@ -32,7 +32,6 @@ namespace Docter
         public DocterForm()
         {
             InitializeComponent();
-            connection = new DocterApplication_Connection(this);
             UsingClientList = new ClientList();
 
             //makeTestCode();
@@ -41,16 +40,7 @@ namespace Docter
 
         private void button1_Click(object sender, EventArgs e)
         {
-            UsingClient = comboBox1.SelectedItem as Session;
-            ClientInfoBox.Invoke(new Action(() =>
-            {
-                ClientInfoBox.Clear();
-                ClientInfoBox.AppendText($"Client name: {UsingClient.client.UserName}\n");
-                ClientInfoBox.AppendText($"Client Age: {UsingClient.client.Age}\n");
-                ClientInfoBox.AppendText($"Client Age: {UsingClient.client.sex.ToString()}\n");
-                //ClientInfoBox.AppendText($"Number of trainings: {UsingClient.Trainings.Count}\n");
-            }));
-
+            connection.getClientInfo(comboBox1.SelectedItem.ToString());
 
             TrainingListBox.Invoke(new Action(() =>
             {
@@ -64,6 +54,18 @@ namespace Docter
                      }
 
                  }*/
+            }));
+        }
+
+        public void updateClientInfo(ClientInfo client)
+        {
+            ClientInfoBox.Invoke(new Action(() =>
+            {
+                ClientInfoBox.Clear();
+                ClientInfoBox.AppendText($"Client name: {client.UserName}\n");
+                ClientInfoBox.AppendText($"Client Age: {client.Age}\n");
+                ClientInfoBox.AppendText($"Client Age: {client.sex.ToString()}\n");
+                //ClientInfoBox.AppendText($"Number of trainings: {UsingClient.Trainings.Count}\n");
             }));
         }
 
@@ -105,7 +107,7 @@ namespace Docter
 
         private void StartStatusThread()
         {
-            new MakeTraining(UsingClient.client);
+            //new MakeTraining(UsingClient.client);
             Task.Run(() =>
             {
                 while (_keepSessionGoing)
@@ -133,7 +135,7 @@ namespace Docter
                     }
                 }
             }));
-            comboBox1.Items.Clear();
+            
 
 
 
@@ -154,6 +156,7 @@ namespace Docter
 
         private void DocterForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            connection.close();
             Application.Exit();
         }
 

@@ -46,6 +46,7 @@ namespace IPR
 
         private void ServerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            
             Application.Exit();
         }
     }

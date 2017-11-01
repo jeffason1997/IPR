@@ -18,9 +18,8 @@ namespace IPR
         private readonly NetworkStream _stream;
         readonly SslStream _sslStream;
         public Boolean IsDoctor;
-        public ClientInfo client;
         public List<Session> DoctorsToSendDataTo;
-        private string Username;
+        public string Username;
 
         public Session(TcpClient client)
         {
@@ -122,7 +121,6 @@ namespace IPR
         #region
         public void ProcesAnswer(dynamic answer)
         {
-            Console.WriteLine(answer);
             dynamic jsonObject = JsonConvert.DeserializeObject(answer);
             try
             {
@@ -130,7 +128,7 @@ namespace IPR
                 {
                     CheckCredentials((string)jsonObject.data.username, (string)jsonObject.data.password);
                 }
-                if (jsonObject.id == "session/start")
+                else if (jsonObject.id == "session/start")
                 {
                     NoPermission("session/start");
                 }
@@ -147,17 +145,25 @@ namespace IPR
                 {
 
                 }
+                else if (jsonObject.id == "session/getClientInfo")
+                {
+                    getClientInfo((string)jsonObject.data.username);
+                }
                 else if (jsonObject.id == "session/end")
                 {
                     NoPermission("session/end");
                 }
                 else if (jsonObject.id == "StopAstrand")
                 {
-                    ClientInfo client = new ClientInfo((string)jsonObject.Name, (int)jsonObject.Age, (Sex)jsonObject.sex);
-                    if (CloseSession(client))
+                    string username = (string)jsonObject.data.username;
+                    if (CloseSession(username))
                     {
                         FileWriteClass.Close();
                     }
+                }
+                else if (jsonObject.id == "doctor/login")
+                {
+                    CheckDoctorCredentials((string)jsonObject.data.username, (string)jsonObject.data.password);
                 }
                 else if (jsonObject.id == "doctor/sessions")
                 {
@@ -165,8 +171,8 @@ namespace IPR
                 }
                 else if (jsonObject.id == "doctor/training/start")
                 {
-                    ClientInfo client = new ClientInfo((string)jsonObject.Name, (int)jsonObject.Age, (Sex)jsonObject.sex);
-                    if (CreateNewSession(client, true))
+                    string username = (string)jsonObject.username;
+                    if (CreateNewSession(username, true))
                     {
                         dynamic response = new
                         {
@@ -181,8 +187,8 @@ namespace IPR
                 }
                 else if (jsonObject.id == "doctor/training/stop")
                 {
-                    ClientInfo client = new ClientInfo((string)jsonObject.Name, (int)jsonObject.Age, (Sex)jsonObject.sex);
-                    if (CloseSession(client))
+                    string username = (string)jsonObject.username;
+                    if (CloseSession(username))
                     {
                         dynamic response = new
                         {
@@ -215,8 +221,8 @@ namespace IPR
                 {
                     if (IsDoctor)
                     {
-                        ClientInfo client = new ClientInfo((string)jsonObject.Name, (int)jsonObject.Age, (Sex)jsonObject.sex);
-                        FolowAPatientSession(client);
+                        string username = (string)jsonObject.username;
+                        FolowAPatientSession(username);
                     }
                     else
                     {
@@ -227,8 +233,8 @@ namespace IPR
                 {
                     if (IsDoctor)
                     {
-                        ClientInfo client = new ClientInfo((string)jsonObject.Name, (int)jsonObject.Age, (Sex)jsonObject.sex);
-                        UnFollowAPatientSession(client);
+                        string username = (string)jsonObject.username;
+                        UnFollowAPatientSession(username);
                     }
                     else
                     {
@@ -239,9 +245,9 @@ namespace IPR
                 {
                     if (IsDoctor)
                     {
-                        ClientInfo client = new ClientInfo((string)jsonObject.Name, (int)jsonObject.Age, (Sex)jsonObject.sex);
-                        CreateNewSession(client, false);
-                        StartAstrandFromPatient(client);
+                        string username = (string)jsonObject.username;
+                        CreateNewSession(username, false);
+                        StartAstrandFromPatient(username);
                     }
                     else
                     {
@@ -277,6 +283,41 @@ namespace IPR
             }
         }
 
+        public void CheckDoctorCredentials(string username, string password)
+        {
+            if (FileWriteClass.CheckDoctorCredentials(username, password))
+            {
+                IsDoctor = true;
+                Username = username;
+                Send(JsonConvert.SerializeObject(Commands.DoctorLoginResponse("ok")));
+            }
+            else
+            {
+                Send(JsonConvert.SerializeObject(Commands.DoctorLoginResponse("error")));
+            }
+        }
+        #endregion
+
+        //get ClientInfo
+        #region
+        public void getClientInfo(string username)
+        {
+            ClientInfo client = FileWriteClass.GetClientInfo(username);
+            dynamic response = new
+            {
+                id = "doctor/Client",
+                data = new
+                {
+                    username = client.UserName,
+                    age = client.Age,
+                    sex = client.sex.ToString()
+                }
+            };
+            Console.WriteLine("Session 308 "+JsonConvert.SerializeObject(response));
+            Send(JsonConvert.SerializeObject(response));
+        }
+        #endregion
+
         //Return list with active sessions to doctor
         #region
         public void SessionList()
@@ -302,30 +343,15 @@ namespace IPR
                         sessions = sessionNames.ToArray()
                     }
                 };
-                Console.WriteLine(JsonConvert.SerializeObject(response));
+                //Console.WriteLine(JsonConvert.SerializeObject(response));
                 Send(JsonConvert.SerializeObject(response));
-            }
-        }
-        #endregion
-
-        public void CheckDoctorCredentials(string username, string password)
-        {
-            if (FileWriteClass.CheckDoctorCredentials(username, password))
-            {
-                IsDoctor = true;
-                Username = username;
-                Send(JsonConvert.SerializeObject(Commands.DoctorLoginResponse("ok")));
-            }
-            else
-            {
-                Send(JsonConvert.SerializeObject(Commands.DoctorLoginResponse("error")));
             }
         }
         #endregion
 
         //Create new session.
         #region
-        public Boolean CreateNewSession(ClientInfo client, Boolean responseStartSession)
+        public Boolean CreateNewSession(string user, Boolean responseStartSession)
         {
             if (!IsDoctor)
             {
@@ -334,7 +360,7 @@ namespace IPR
             }
             else
             {
-                Session ThisClient = ServerProgram.GetSessionWithUsername(client);
+                Session ThisClient = ServerProgram.GetSessionWithUsername(user);
                 if (ThisClient == null)
                 {
                     Send(JsonConvert.SerializeObject(Commands.DoctorTrainingStartError("No client active with given username.")));
@@ -343,7 +369,7 @@ namespace IPR
                 try
                 {
 
-                    if (FileWriteClass.AddActiveSession(client))
+                    if (FileWriteClass.AddActiveSession(user))
                     {
                         dynamic answer = new
                         {
@@ -351,7 +377,7 @@ namespace IPR
                             data = new
                             {
                                 status = "OK",
-                                sessionID = client
+                                sessionID = user
                             }
                         };
                         if (responseStartSession)
@@ -375,15 +401,13 @@ namespace IPR
         }
         #endregion
 
-
-
         //Recieved data from patient
         #region
         public void DataRecieved(dynamic jsonObject)
         {
             try
             {
-                ClientInfo client = new ClientInfo((string)jsonObject.Name, (int)jsonObject.Age, (Sex)jsonObject.sex);
+                string session = (string)jsonObject.session;
 
                 HealthData tempData = new HealthData((byte)jsonObject.Status.Heartbeat, (int)jsonObject.Status.RPM,
                     (int)jsonObject.Status.Speed, (float)jsonObject.Status.Distance,
@@ -393,7 +417,7 @@ namespace IPR
                 TrainingItem tempItem = new TrainingItem((TypeOfTraining)jsonObject.ThisType, (int)jsonObject.Seconds,
                     tempData, jsonObject.SessionTime);
 
-                Boolean added = FileWriteClass.AddDataToSession(client, tempItem);
+                Boolean added = FileWriteClass.AddDataToSession(session, tempItem);
                 if (added)
                 {
                     dynamic answer = new
@@ -408,7 +432,7 @@ namespace IPR
                     dynamic answerToDoctor = new
                     {
                         id = "data",
-                        sessionId = client,
+                        sessionId = session,
                         data = new
                         {
                             data = tempItem
@@ -449,9 +473,9 @@ namespace IPR
 
         //Close session
         #region
-        public Boolean CloseSession(ClientInfo client)
+        public Boolean CloseSession(string username)
         {
-            Session Sclient = ServerProgram.GetSessionWithUsername(client);
+            Session Sclient = ServerProgram.GetSessionWithUsername(username);
             if (Sclient == null)
             {
                 Send(JsonConvert.SerializeObject(Commands.DoctorTrianingStopError("No client active with given username.")));
@@ -459,7 +483,7 @@ namespace IPR
             }
             try
             {
-                FileWriteClass.CloseActiveSession(client);
+                FileWriteClass.CloseActiveSession(username);
                 dynamic answer = new
                 {
                     id = "session/end",
@@ -491,8 +515,8 @@ namespace IPR
             }
             else
             {
-                ClientInfo client = new ClientInfo((string)jsonObject.Name, (int)jsonObject.Age, (Sex)jsonObject.sex);
-                Session Sclient = ServerProgram.GetSessionWithUsername(client);
+                string username = (string)jsonObject.username;
+                Session Sclient = ServerProgram.GetSessionWithUsername(username);
                 if (Sclient == null)
                 {
                     Send(JsonConvert.SerializeObject(Commands.SetPowerError("No client active with given username.")));
@@ -517,11 +541,11 @@ namespace IPR
 
         //Follow and unfollow a patient session
         #region
-        public void FolowAPatientSession(ClientInfo client)
+        public void FolowAPatientSession(string username)
         {
             try
             {
-                Session clientToListenTo = ServerProgram.GetSessionWithUsername(client);
+                Session clientToListenTo = ServerProgram.GetSessionWithUsername(username);
                 if (clientToListenTo != null)
                 {
                     clientToListenTo.DoctorsToSendDataTo.Add(this);
@@ -546,11 +570,11 @@ namespace IPR
             }
         }
 
-        public void UnFollowAPatientSession(ClientInfo client)
+        public void UnFollowAPatientSession(string username)
         {
             try
             {
-                Session clientToListenTo = ServerProgram.GetSessionWithUsername(client);
+                Session clientToListenTo = ServerProgram.GetSessionWithUsername(username);
                 if (clientToListenTo != null)
                 {
                     if (clientToListenTo.DoctorsToSendDataTo.Contains(this))
@@ -581,12 +605,12 @@ namespace IPR
 
         //StartAstrand from patient
         #region
-        public void StartAstrandFromPatient(ClientInfo client)
+        public void StartAstrandFromPatient(string username)
         {
             try
             {
 
-                Session clientToStart = ServerProgram.GetSessionWithUsername(client);
+                Session clientToStart = ServerProgram.GetSessionWithUsername(username);
                 if (clientToStart != null)
                 {
                     dynamic answer = new
@@ -594,7 +618,7 @@ namespace IPR
                         id = "StartAstrand",
                         data = new
                         {
-                            sessionId = client
+                            sessionId = username
                         }
                     };
                     clientToStart.Send(JsonConvert.SerializeObject(answer));
@@ -607,7 +631,7 @@ namespace IPR
                         }
                     };
                     Send(JsonConvert.SerializeObject(answerToDocter));
-                    FileWriteClass.AddActiveSession(client);
+                    FileWriteClass.AddActiveSession(username);
                 }
                 else
                 {

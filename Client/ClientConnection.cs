@@ -34,7 +34,7 @@ namespace Client
 
         public ClientConnection(string username, string password)
         {
-
+            Console.WriteLine($"{username} + {password}");
             IPAddress localhost;
             bool ipIsOk = IPAddress.TryParse("127.0.0.1", out localhost);
             if (!ipIsOk)

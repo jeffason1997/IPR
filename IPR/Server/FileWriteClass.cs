@@ -13,8 +13,10 @@ namespace IPR
     {
         static Dictionary<string, string> CredentialsDoctor = new Dictionary<string, string>();
         static Dictionary<string, string> CredentialsClient = new Dictionary<string, string>();
-        static Dictionary<ClientInfo, List<OneTraining>> AllTrainings = new Dictionary<ClientInfo, List<OneTraining>>();
-        static Dictionary<ClientInfo, OneTraining> LiveTraining = new Dictionary<ClientInfo, OneTraining>();
+        static Dictionary<string, List<OneTraining>> AllTrainings = new Dictionary<string, List<OneTraining>>();
+        static Dictionary<string, OneTraining> LiveTraining = new Dictionary<string, OneTraining>();
+        static Dictionary<string, ClientInfo> allClientInfos = new Dictionary<string, ClientInfo>();
+
 
         public static void GetSavedData()
         {
@@ -25,17 +27,14 @@ namespace IPR
                 {
                     string AllText = File.ReadAllText(path);
                     List<string> lines = AllText.Split('&').ToList();
-                    Dictionary<ClientInfo, List<OneTraining>> dictionary = new Dictionary<ClientInfo, List<OneTraining>>();
+                    Dictionary<string, List<OneTraining>> dictionary = new Dictionary<string, List<OneTraining>>();
                     foreach (string s in lines)
                     {
                         dynamic jsonObject = JsonConvert.DeserializeObject(s);
                         if (jsonObject != null)
                         {
                             // This makes the client
-                            ClientInfo client = new ClientInfo((string) jsonObject.Name, (int) jsonObject.Age,
-                                (Sex) jsonObject.sex);
-
-                            // This makes the trainings list
+                            string username = jsonObject.username;
                             List<OneTraining> sessions = new List<OneTraining>();
                             foreach (dynamic training in jsonObject.data.Trainingsession)
                             {
@@ -58,7 +57,7 @@ namespace IPR
                                 }
                                 sessions.Add(oneTrainingList);
                             }
-                            dictionary.Add(client, sessions);
+                            dictionary.Add(username, sessions);
                         }
                     }
                     AllTrainings = dictionary;
@@ -69,6 +68,19 @@ namespace IPR
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("Error while reading:(\r\n" + e.Message);
+            }
+        }
+
+        public static void GetSavedClientInfo()
+        {
+            string path = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, @"IPR\IPR\Server\ClientInfo.txt");
+            string AllText = File.ReadAllText(path);
+            dynamic jsonObject = JsonConvert.DeserializeObject(AllText);
+            foreach (dynamic combination in jsonObject.combinations)
+            {
+                ClientInfo tempInfo = new ClientInfo((string)combination.username,(int)combination.age,(Sex)combination.sex);
+                Console.WriteLine($"{tempInfo.UserName} + {tempInfo.Age} + {tempInfo.sex}");
+                allClientInfos.Add(tempInfo.UserName,tempInfo);
             }
         }
 
@@ -100,6 +112,21 @@ namespace IPR
             return false;
         }
 
+        public static ClientInfo GetClientInfo(string username)
+        {
+            if (allClientInfos.ContainsKey(username))
+            {
+                Console.WriteLine($"{allClientInfos[username].UserName} + {allClientInfos[username].Age} + {allClientInfos[username].sex}");
+                return allClientInfos[username];
+
+            }
+            else
+            {
+                return null;
+            }
+           
+        }
+
         public static Boolean CheckDoctorCredentials(string username, string password)
         {
             if (CredentialsDoctor.ContainsKey(username))
@@ -115,7 +142,7 @@ namespace IPR
             {
                 string path = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, @"IPR\IPR\Server\Database.txt");
                 string toWrite = "";
-                foreach (KeyValuePair<ClientInfo, List<OneTraining>> entry in AllTrainings)
+                foreach (KeyValuePair<string, List<OneTraining>> entry in AllTrainings)
                 {
 
                     dynamic keyValuePair = new
@@ -136,7 +163,7 @@ namespace IPR
             }
         }
 
-        public static Boolean AddActiveSession(ClientInfo client)
+        public static Boolean AddActiveSession(string client)
         {
             if (!LiveTraining.ContainsKey(client))
             {
@@ -146,7 +173,7 @@ namespace IPR
             return false;
         }
 
-        public static Boolean AddDataToSession(ClientInfo client, TrainingItem data)
+        public static Boolean AddDataToSession(string client, TrainingItem data)
         {
             if (LiveTraining.ContainsKey(client))
             {
@@ -156,7 +183,7 @@ namespace IPR
             return false;
         }
 
-        public static void CloseActiveSession(ClientInfo client)
+        public static void CloseActiveSession(string client)
         {
             OneTraining session = LiveTraining[client];
             LiveTraining.Remove(client);

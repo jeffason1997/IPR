@@ -46,10 +46,10 @@ namespace IPR
                 server.updateTextBox("Client server klaar voor verbindingen...\n");
                 FileWriteClass.GetSavedData();
                 FileWriteClass.GetSavedCredentials();
+                FileWriteClass.GetSavedClientInfo();
                 while (true)
                 {
                     TcpClient client = listener.AcceptTcpClient();
-                    Console.WriteLine("hello");
                     Thread thread = new Thread(() => { HandleNewClient(client); });
                     thread.Start();
                     server.updateTextBox($"Verbonden met client: {client.Client.AddressFamily.ToString()}\n");
@@ -75,12 +75,12 @@ namespace IPR
             return ToReturn;
         }
 
-        public static Session GetSessionWithUsername(ClientInfo client)
+        public static Session GetSessionWithUsername(string username)
         {
-            Console.WriteLine(sessions.Capacity);
+            //Console.WriteLine(sessions.Capacity);
             foreach (Session s in sessions)
             {
-                if (s.client.UserName == client.UserName)
+                if (s.Username == username)
                 {
                     return s;
                 }
