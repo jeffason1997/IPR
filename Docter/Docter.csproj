@@ -56,6 +56,12 @@
     <Compile Include="DocterForm.Designer.cs">
       <DependentUpon>DocterForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DocterLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DocterLogin.Designer.cs">
+      <DependentUpon>DocterLogin.cs</DependentUpon>
+    </Compile>
     <Compile Include="KettlerStats.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -66,6 +72,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="DocterForm.resx">
       <DependentUpon>DocterForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DocterLogin.resx">
+      <DependentUpon>DocterLogin.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="KettlerStats.resx">
       <DependentUpon>KettlerStats.cs</DependentUpon>
