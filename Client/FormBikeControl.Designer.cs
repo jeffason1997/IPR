@@ -51,6 +51,7 @@
             this.comPortComboBox.Name = "comPortComboBox";
             this.comPortComboBox.Size = new System.Drawing.Size(160, 24);
             this.comPortComboBox.TabIndex = 2;
+            this.comPortComboBox.SelectedIndexChanged += new System.EventHandler(this.comPortComboBox_SelectedIndexChanged);
             // 
             // button1
             // 

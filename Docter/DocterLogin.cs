@@ -23,6 +23,7 @@ namespace Docter
             var username = txtUsername.Text;
             var password = txtPassword.Text;
             DocterApplication_Connection con = new DocterApplication_Connection(username, password);
+            new DocterForm(con).Show();
             this.Hide();
 
         }

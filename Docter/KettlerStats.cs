@@ -19,8 +19,11 @@ namespace Docter
             InitializeComponent();
         }
 
-        public void UpdateTextFields(HealthData status)
+        public void UpdateTextFields(TrainingItem item)
         {
+            lblTraining.Text = item.ThisType.ToString();
+
+            dynamic status = item.Status;
             lblBpm.Text = status.Heartbeat.ToString();
             lblRpm.Text = status.Rpm.ToString();
             lblSpeed.Text = status.Speed.ToString();
@@ -44,7 +47,7 @@ namespace Docter
 
         public double GetValue(string value)
         {
-            Console.WriteLine(value);
+            //Console.WriteLine(value);
             if (value.Equals("Heartbeat"))
             {
                 return Convert.ToDouble(lblBpm.Text);
@@ -67,7 +70,7 @@ namespace Docter
             }
             else
             {
-                Console.WriteLine("this is not supposed to happen");
+                //Console.WriteLine("this is not supposed to happen");
                 return 0;
             }
 

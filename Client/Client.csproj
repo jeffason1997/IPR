@@ -88,13 +88,18 @@
     <Compile Include="FormBikeControl.Designer.cs">
       <DependentUpon>FormBikeControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="KettlerStats.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="KettlerStats.Designer.cs">
+      <DependentUpon>KettlerStats.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoginClients.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="LoginClients.Designer.cs">
       <DependentUpon>LoginClients.cs</DependentUpon>
     </Compile>
-    <Compile Include="TrainingClasses\MakeTraining.cs" />
     <Compile Include="TrainingClasses\OneTraining.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -103,6 +108,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormBikeControl.resx">
       <DependentUpon>FormBikeControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="KettlerStats.resx">
+      <DependentUpon>KettlerStats.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoginClients.resx">
       <DependentUpon>LoginClients.cs</DependentUpon>

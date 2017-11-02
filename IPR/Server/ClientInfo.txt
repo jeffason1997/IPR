@@ -1,3 +1,3 @@
 {
-	"combinations":[{"username":"Robbel","age":20,"sex":"Male"}, {"username":"Test","age":34,"sex":"Female"}]
+	"combinations":[{"username":"Robbel","age":20,"sex":"Male","weight":65}, {"username":"Test","age":34,"sex":"Female","weight":59}]
 }

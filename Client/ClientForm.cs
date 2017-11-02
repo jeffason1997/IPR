@@ -13,16 +13,49 @@ namespace Client
     public partial class ClientForm : Form
     {
         private ClientConnection _con;
+        private FormBikeControl bikeControl = new FormBikeControl();
+        public ClientInfo CInfo;
+
         public ClientForm(ClientConnection con)
         {
             InitializeComponent();
             _con = con;
+            _con.setBikeControl(bikeControl);
+            _con.setClientForm(this);
+            _con.getClientInfo();
+            kettlerStats1.setForm(this);
+        }
+
+        public ClientConnection getConn()
+        {
+            return _con;
         }
 
         private void bikeConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            new FormBikeControl(_con).Show();
+            bikeControl.Show();
             this.Hide();
+        }
+
+        public void updateKettlerStats(HealthData item)
+        {
+            kettlerStats1.Invoke(new Action(() =>
+            {
+                kettlerStats1.UpdateTextFields(item);
+            }));
+        }
+
+        public void updateTextBox(string message)
+        {
+            textBox1.Invoke(new Action(() =>
+            {
+                textBox1.AppendText(message + "\n");
+            }));
+        }
+
+        public void updateClientInfo(ClientInfo info)
+        {
+            CInfo = info;
         }
 
         private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)

@@ -32,6 +32,7 @@
             this.bikeConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.kettlerStats1 = new Client.KettlerStats();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -42,7 +43,7 @@
             this.bikeConfigurationToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(515, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(666, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -59,7 +60,7 @@
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(503, 354);
+            this.textBox1.Size = new System.Drawing.Size(433, 354);
             this.textBox1.TabIndex = 1;
             // 
             // label1
@@ -72,11 +73,19 @@
             this.label1.TabIndex = 2;
             this.label1.Text = "Instruction:";
             // 
+            // kettlerStats1
+            // 
+            this.kettlerStats1.Location = new System.Drawing.Point(451, 56);
+            this.kettlerStats1.Name = "kettlerStats1";
+            this.kettlerStats1.Size = new System.Drawing.Size(204, 270);
+            this.kettlerStats1.TabIndex = 3;
+            // 
             // ClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(515, 422);
+            this.ClientSize = new System.Drawing.Size(666, 422);
+            this.Controls.Add(this.kettlerStats1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.menuStrip1);
@@ -97,6 +106,7 @@
         private System.Windows.Forms.ToolStripMenuItem bikeConfigurationToolStripMenuItem;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label1;
+        private KettlerStats kettlerStats1;
     }
 }
 

@@ -78,8 +78,8 @@ namespace IPR
             dynamic jsonObject = JsonConvert.DeserializeObject(AllText);
             foreach (dynamic combination in jsonObject.combinations)
             {
-                ClientInfo tempInfo = new ClientInfo((string)combination.username,(int)combination.age,(Sex)combination.sex);
-                Console.WriteLine($"{tempInfo.UserName} + {tempInfo.Age} + {tempInfo.sex}");
+                ClientInfo tempInfo = new ClientInfo((string)combination.username,(int)combination.age,(Sex)combination.sex,(int)combination.weight);
+                //Console.WriteLine($"{tempInfo.UserName} + {tempInfo.Age} + {tempInfo.sex}");
                 allClientInfos.Add(tempInfo.UserName,tempInfo);
             }
         }
@@ -116,7 +116,7 @@ namespace IPR
         {
             if (allClientInfos.ContainsKey(username))
             {
-                Console.WriteLine($"{allClientInfos[username].UserName} + {allClientInfos[username].Age} + {allClientInfos[username].sex}");
+                //Console.WriteLine($"{allClientInfos[username].UserName} + {allClientInfos[username].Age} + {allClientInfos[username].sex}");
                 return allClientInfos[username];
 
             }
@@ -183,9 +183,12 @@ namespace IPR
             return false;
         }
 
-        public static void CloseActiveSession(string client)
+        public static void CloseActiveSession(string client, double vo2, double avgHeart,ClientInfo clInfo)
         {
             OneTraining session = LiveTraining[client];
+            session.VO2Max = vo2;
+            session.averageHeartBeat = avgHeart;
+            session.client = clInfo;
             LiveTraining.Remove(client);
             if (AllTrainings.ContainsKey(client))
             {

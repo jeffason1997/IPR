@@ -18,23 +18,22 @@ namespace Client
 {
     public class ClientConnection
     {
-        private readonly bool _SSL = false;
-        private readonly SslStream _sslStream;
         private readonly NetworkStream _stream;
         int port = 1234;
         TcpClient TcpClient;
         string CurrentSessionId;
-        Thread read, getData;
+        Thread read;
         public Boolean isConnected;
-        int measurement = 0;
         private IConnector _conn;
         private FormBikeControl _bikeControl;
+        private ClientForm CForm;
+        private string Username;
 
 
 
         public ClientConnection(string username, string password)
         {
-            Console.WriteLine($"{username} + {password}");
+            //Console.WriteLine($"{username} + {password}");
             IPAddress localhost;
             bool ipIsOk = IPAddress.TryParse("127.0.0.1", out localhost);
             if (!ipIsOk)
@@ -44,16 +43,22 @@ namespace Client
 
             TcpClient = new TcpClient(localhost.ToString(), port);
             _stream = TcpClient.GetStream();
-            if (_SSL)
-            {
-                _sslStream = new SslStream(_stream, false, new RemoteCertificateValidationCallback(ValidateCert));
-                _sslStream.AuthenticateAsClient("Healthcare", null, System.Security.Authentication.SslProtocols.Tls12, false);
-            }
             isConnected = true;
             read = new Thread(Read);
             read.Start();
+            Username = username;
             sendlogin(username, password);
 
+        }
+
+        public void setClientForm(ClientForm form)
+        {
+            CForm = form;
+        }
+
+        public void setBikeControl(FormBikeControl form)
+        {
+            _bikeControl = form;
         }
 
         public void Read()
@@ -70,7 +75,7 @@ namespace Client
 
                     do
                     {
-                        int numberOfBytesRead = _SSL ? _sslStream.Read(receiveBuffer, 0, receiveBuffer.Length) : _stream.Read(receiveBuffer, 0, receiveBuffer.Length);
+                        int numberOfBytesRead = _stream.Read(receiveBuffer, 0, receiveBuffer.Length);
                         totalBytesreceived += numberOfBytesRead;
                         string received = Encoding.ASCII.GetString(receiveBuffer, 0, numberOfBytesRead);
                         response.AppendFormat("{0}", received);
@@ -93,14 +98,7 @@ namespace Client
                         }
                     }
                     while (!messagereceived);
-                    if (_SSL)
-                    {
-                        _sslStream.Flush();
-                    }
-                    else
-                    {
-                        _stream.Flush();
-                    }
+                    _stream.Flush();
                     string toReturn = response.ToString().Substring(4);
                     System.Diagnostics.Debug.WriteLine("Received client: \r\n" + toReturn);
                     ProcessAnswer(toReturn);
@@ -133,6 +131,7 @@ namespace Client
 
             if (jsonData.id == "session/start")
             {
+                string user = jsonData.data.sessionID;
                 CurrentSessionId = Guid.NewGuid().ToString();
                 string com = _bikeControl.GetCom();
                 if (com == "SIM")
@@ -147,7 +146,7 @@ namespace Client
                     _conn.Reset();
                     Thread.Sleep(1000);
                     _conn.GetId((msg) =>
-                    GetData());
+                    GetData(user));
                 });
             }
             if (jsonData.id == "session/end")
@@ -165,21 +164,39 @@ namespace Client
                 }
                 else
                 {
-                    new Thread(() => { MessageBox.Show("Username and password are correct"); }).Start();
                     close();
                 }
+            }
+            if (jsonData.id == "doctor/Client")
+            {
+                //Console.WriteLine(jsonData);
+                string user = (string)jsonData.data.username;
+                int age = (int)jsonData.data.age;
+                Sex sex = jsonData.data.sex;
+                int weight = jsonData.data.weight;
+                ClientInfo tempInfo = new ClientInfo(user, age, sex, weight);
+                CForm.updateClientInfo(tempInfo);
             }
             if (jsonData.id == "client/SetPower")
             {
                 if (_conn != null)
                 {
-                    _conn.SetPower(jsonData.data.power);
+                    setPower(jsonData.data.power);
                 }
             }
             if (jsonData.id == "StartAstrand")
             {
 
             }
+            if (jsonData.id == "client/message")
+            {
+                CForm.updateTextBox((string)jsonData.data.message);
+            }
+        }
+
+        public void setPower(int power)
+        {
+            _conn.SetPower(power);
         }
 
         public void Send(string message)
@@ -190,19 +207,10 @@ namespace Client
             byte[] buffer = new Byte[prefixArray.Length + message.Length];
             prefixArray.CopyTo(buffer, 0);
             requestArray.CopyTo(buffer, prefixArray.Length);
-            if (_SSL)
-            {
-                _sslStream.Write(buffer, 0, buffer.Length);
-            }
-            else
-            {
-                _stream.Write(buffer, 0, buffer.Length);
-            }
-
-
+            _stream.Write(buffer, 0, buffer.Length);
         }
 
-        public void GetData()
+        public void GetData(string user)
         {
             while (CurrentSessionId == null)
             {
@@ -213,31 +221,22 @@ namespace Client
                 while (isConnected)
                 {
                     Thread.Sleep(1000);
-                    if (_conn.GetType() == typeof(KettlerConnector))
+                    System.Diagnostics.Debug.WriteLine(isConnected);
+                    _conn.GetStats(msg =>
                     {
-                        System.Diagnostics.Debug.WriteLine(isConnected);
-                        _conn.GetStats(msg =>
+                        var status = new KettlerStatus(msg, CurrentSessionId);
+                        CForm.updateKettlerStats(status);
+                        dynamic KettlerData = new
                         {
-                            var status = new KettlerStatus(msg, CurrentSessionId);
-
-                            dynamic KettlerData = new
+                            id = "data",
+                            session = user,
+                            data = new
                             {
-                                id = "data",
-                                session = CurrentSessionId,
-                                data = new
-                                {
-                                    power = status.ActualPower,
-                                    speed = status.Speed,
-                                    time = status.Time,
-                                    RPM = status.Rpm,
-                                    distance = status.Distance,
-                                    pulse = status.Heartbeat
-                                }
-                            };
-                            Send(JsonConvert.SerializeObject(KettlerData));
-                        });
-                    }
-
+                                status = status
+                            }
+                        };
+                        Send(JsonConvert.SerializeObject(KettlerData));
+                    });
                 }
             });
         }
@@ -247,52 +246,24 @@ namespace Client
             if (_conn != null)
             {
                 _conn.Close();
-            }
-
-            try
-            {
                 read.Abort();
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine("error: " + e.Message);
-            }
-            try
-            {
-                getData.Abort();
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine("error: " + e.Message);
-            }
-            try
-            {
-                if (_SSL)
-                {
-                    _sslStream.Close();
-                }
-                else
-                {
-                    _stream.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine("error: " + e.Message);
-            }
-            try
-            {
+                _stream.Close();
                 TcpClient.Close();
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine("error: " + e.Message);
             }
         }
 
-        public void SetPower(int power)
+
+        public void getClientInfo()
         {
-            _conn.SetPower(power);
+            dynamic getInfo = new
+            {
+                id = "session/getClientInfo",
+                data = new
+                {
+                    username = Username
+                }
+            };
+            Send(JsonConvert.SerializeObject(getInfo));
         }
 
         public void StartAstrand()
@@ -306,9 +277,6 @@ namespace Client
                 System.Diagnostics.Debug.WriteLine("client regel 348: " + e.StackTrace);
             }
         }
-
-        public static bool ValidateCert(object sender, X509Certificate certificate,
-              X509Chain chain, SslPolicyErrors sslPolicyErrors) => sslPolicyErrors == SslPolicyErrors.None;
     }
 }
 

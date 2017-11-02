@@ -11,12 +11,14 @@ namespace Client
         public string UserName { get; }
         public int Age { get; }
         public Sex sex { get;}
+        public int Weight { get; }
 
-        public ClientInfo(string name, int age, Sex s)
+        public ClientInfo(string name, int age, Sex s, int weight)
         {
             UserName = name;
             Age = age;
             sex = s;
+            Weight = weight;
         }
 
         public override string ToString()

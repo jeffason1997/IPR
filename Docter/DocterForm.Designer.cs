@@ -28,9 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
@@ -44,13 +41,16 @@
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bikeSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.StartButton = new System.Windows.Forms.Button();
-            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.kettlerStats1 = new Docter.KettlerStats();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.SelectOldTrainingButton = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.kettlerStats1 = new Docter.KettlerStats();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // comboBox1
@@ -168,36 +168,13 @@
             this.StartButton.UseVisualStyleBackColor = true;
             this.StartButton.Click += new System.EventHandler(this.StartButton_Click);
             // 
-            // chart1
-            // 
-            chartArea1.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chart1.Legends.Add(legend1);
-            this.chart1.Location = new System.Drawing.Point(559, 36);
-            this.chart1.Name = "chart1";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(515, 442);
-            this.chart1.TabIndex = 11;
-            this.chart1.Text = "chart1";
-            // 
-            // kettlerStats1
-            // 
-            this.kettlerStats1.Location = new System.Drawing.Point(289, 99);
-            this.kettlerStats1.Name = "kettlerStats1";
-            this.kettlerStats1.Size = new System.Drawing.Size(139, 144);
-            this.kettlerStats1.TabIndex = 12;
-            // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(289, 250);
+            this.textBox1.Location = new System.Drawing.Point(271, 260);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(245, 228);
+            this.textBox1.Size = new System.Drawing.Size(266, 256);
             this.textBox1.TabIndex = 13;
             // 
             // SelectOldTrainingButton
@@ -219,16 +196,53 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.tabControl1);
+            this.panel1.Location = new System.Drawing.Point(540, 31);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(534, 498);
+            this.panel1.TabIndex = 16;
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Location = new System.Drawing.Point(3, 6);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(528, 492);
+            this.tabControl1.TabIndex = 0;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Location = new System.Drawing.Point(0, 0);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Size = new System.Drawing.Size(200, 100);
+            this.tabPage2.TabIndex = 0;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Location = new System.Drawing.Point(0, 0);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Size = new System.Drawing.Size(200, 100);
+            this.tabPage1.TabIndex = 0;
+            // 
+            // kettlerStats1
+            // 
+            this.kettlerStats1.Location = new System.Drawing.Point(274, 99);
+            this.kettlerStats1.Name = "kettlerStats1";
+            this.kettlerStats1.Size = new System.Drawing.Size(248, 155);
+            this.kettlerStats1.TabIndex = 12;
+            // 
             // DocterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1086, 541);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.SelectOldTrainingButton);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.kettlerStats1);
-            this.Controls.Add(this.chart1);
             this.Controls.Add(this.StartButton);
             this.Controls.Add(this.TrainingListBox);
             this.Controls.Add(this.label3);
@@ -244,7 +258,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DocterForm_FormClosing);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -265,11 +279,14 @@
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bikeSettingsToolStripMenuItem;
         private System.Windows.Forms.Button StartButton;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
         private Docter.KettlerStats kettlerStats1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button SelectOldTrainingButton;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
     }
 }
 

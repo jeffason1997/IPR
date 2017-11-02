@@ -16,7 +16,6 @@ namespace IPR
     {
         public static List<Session> sessions { get; set; }
         static int port = 1234;
-        private Thread Server = null;
 
         public ServerProgram()
         {
@@ -62,6 +61,11 @@ namespace IPR
             }
         }
 
+        public static void ErrorWithSession(Session session)
+        {
+            sessions.Remove(session);
+        }
+
         public static List<Session> GetAllPatients()
         {
             List<Session> ToReturn = new List<Session>();
@@ -77,9 +81,10 @@ namespace IPR
 
         public static Session GetSessionWithUsername(string username)
         {
-            //Console.WriteLine(sessions.Capacity);
+            
             foreach (Session s in sessions)
             {
+                //Console.WriteLine($"{s.Username } + {username}");
                 if (s.Username == username)
                 {
                     return s;

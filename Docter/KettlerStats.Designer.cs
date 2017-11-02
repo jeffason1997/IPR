@@ -44,12 +44,14 @@
             this.label3 = new System.Windows.Forms.Label();
             this.lblBpm = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.lblTraining = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblActPower
             // 
             this.lblActPower.AutoSize = true;
-            this.lblActPower.Location = new System.Drawing.Point(84, 112);
+            this.lblActPower.Location = new System.Drawing.Point(84, 131);
             this.lblActPower.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblActPower.Name = "lblActPower";
             this.lblActPower.Size = new System.Drawing.Size(16, 17);
@@ -59,7 +61,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(4, 112);
+            this.label5.Location = new System.Drawing.Point(4, 131);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(75, 17);
@@ -69,7 +71,7 @@
             // lblTime
             // 
             this.lblTime.AutoSize = true;
-            this.lblTime.Location = new System.Drawing.Point(84, 96);
+            this.lblTime.Location = new System.Drawing.Point(84, 115);
             this.lblTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(44, 17);
@@ -79,7 +81,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(4, 96);
+            this.label11.Location = new System.Drawing.Point(4, 115);
             this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(39, 17);
@@ -89,7 +91,7 @@
             // lblEnergy
             // 
             this.lblEnergy.AutoSize = true;
-            this.lblEnergy.Location = new System.Drawing.Point(84, 80);
+            this.lblEnergy.Location = new System.Drawing.Point(84, 99);
             this.lblEnergy.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblEnergy.Name = "lblEnergy";
             this.lblEnergy.Size = new System.Drawing.Size(16, 17);
@@ -99,7 +101,7 @@
             // lblEnergysadf
             // 
             this.lblEnergysadf.AutoSize = true;
-            this.lblEnergysadf.Location = new System.Drawing.Point(4, 80);
+            this.lblEnergysadf.Location = new System.Drawing.Point(4, 99);
             this.lblEnergysadf.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblEnergysadf.Name = "lblEnergysadf";
             this.lblEnergysadf.Size = new System.Drawing.Size(53, 17);
@@ -109,7 +111,7 @@
             // lblReqPower
             // 
             this.lblReqPower.AutoSize = true;
-            this.lblReqPower.Location = new System.Drawing.Point(84, 64);
+            this.lblReqPower.Location = new System.Drawing.Point(84, 83);
             this.lblReqPower.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblReqPower.Name = "lblReqPower";
             this.lblReqPower.Size = new System.Drawing.Size(16, 17);
@@ -119,7 +121,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(4, 64);
+            this.label4.Location = new System.Drawing.Point(4, 83);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(77, 17);
@@ -129,7 +131,7 @@
             // lblSpeed
             // 
             this.lblSpeed.AutoSize = true;
-            this.lblSpeed.Location = new System.Drawing.Point(84, 32);
+            this.lblSpeed.Location = new System.Drawing.Point(84, 51);
             this.lblSpeed.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSpeed.Name = "lblSpeed";
             this.lblSpeed.Size = new System.Drawing.Size(16, 17);
@@ -139,7 +141,7 @@
             // lblDistance
             // 
             this.lblDistance.AutoSize = true;
-            this.lblDistance.Location = new System.Drawing.Point(84, 48);
+            this.lblDistance.Location = new System.Drawing.Point(84, 67);
             this.lblDistance.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblDistance.Name = "lblDistance";
             this.lblDistance.Size = new System.Drawing.Size(16, 17);
@@ -149,7 +151,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(4, 48);
+            this.label6.Location = new System.Drawing.Point(4, 67);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(63, 17);
@@ -159,7 +161,7 @@
             // lblSpeedasfd
             // 
             this.lblSpeedasfd.AutoSize = true;
-            this.lblSpeedasfd.Location = new System.Drawing.Point(4, 32);
+            this.lblSpeedasfd.Location = new System.Drawing.Point(4, 51);
             this.lblSpeedasfd.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSpeedasfd.Name = "lblSpeedasfd";
             this.lblSpeedasfd.Size = new System.Drawing.Size(49, 17);
@@ -169,7 +171,7 @@
             // lblRpm
             // 
             this.lblRpm.AutoSize = true;
-            this.lblRpm.Location = new System.Drawing.Point(84, 16);
+            this.lblRpm.Location = new System.Drawing.Point(84, 35);
             this.lblRpm.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblRpm.Name = "lblRpm";
             this.lblRpm.Size = new System.Drawing.Size(16, 17);
@@ -179,7 +181,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(4, 16);
+            this.label3.Location = new System.Drawing.Point(4, 35);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(37, 17);
@@ -189,7 +191,7 @@
             // lblBpm
             // 
             this.lblBpm.AutoSize = true;
-            this.lblBpm.Location = new System.Drawing.Point(84, 0);
+            this.lblBpm.Location = new System.Drawing.Point(84, 19);
             this.lblBpm.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblBpm.Name = "lblBpm";
             this.lblBpm.Size = new System.Drawing.Size(16, 17);
@@ -199,17 +201,37 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(4, 0);
+            this.label1.Location = new System.Drawing.Point(4, 19);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(71, 17);
             this.label1.TabIndex = 58;
             this.label1.Text = "Heartbeat";
             // 
+            // lblTraining
+            // 
+            this.lblTraining.AutoSize = true;
+            this.lblTraining.Location = new System.Drawing.Point(121, 0);
+            this.lblTraining.Name = "lblTraining";
+            this.lblTraining.Size = new System.Drawing.Size(46, 17);
+            this.lblTraining.TabIndex = 77;
+            this.lblTraining.Text = "label7";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(111, 17);
+            this.label2.TabIndex = 76;
+            this.label2.Text = "Current Training";
+            // 
             // KettlerStats
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.lblTraining);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.lblActPower);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.lblTime);
@@ -227,7 +249,7 @@
             this.Controls.Add(this.lblBpm);
             this.Controls.Add(this.label1);
             this.Name = "KettlerStats";
-            this.Size = new System.Drawing.Size(139, 144);
+            this.Size = new System.Drawing.Size(183, 159);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -251,5 +273,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblBpm;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblTraining;
+        private System.Windows.Forms.Label label2;
     }
 }

@@ -32,7 +32,7 @@ namespace Client
 
         public double getValue(String value)
         {
-            Console.WriteLine(value);
+            //Console.WriteLine(value);
             if (value.Equals("Heartbeat"))
             {
                 return (double)Heartbeat;

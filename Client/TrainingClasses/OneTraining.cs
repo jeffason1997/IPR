@@ -9,6 +9,10 @@ namespace Client
     [Serializable]
     public class OneTraining : List<TrainingItem>
     {
+        public double VO2Max { get; set; }
+        public double averageHeartBeat { get; set; }
+        public ClientInfo client { get; set; }
+
         public override string ToString()
         {
             return this[0].SessionTime.ToString();

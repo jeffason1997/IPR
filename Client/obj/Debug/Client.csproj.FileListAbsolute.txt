@@ -5,9 +5,11 @@ C:\Users\jeffrey\Desktop\IPR\IPR\Client\bin\Debug\Newtonsoft.Json.dll
 C:\Users\jeffrey\Desktop\IPR\IPR\Client\bin\Debug\Newtonsoft.Json.xml
 C:\Users\jeffrey\Desktop\IPR\IPR\Client\obj\Debug\Client.ClientForm.resources
 C:\Users\jeffrey\Desktop\IPR\IPR\Client\obj\Debug\Client.FormBikeControl.resources
+C:\Users\jeffrey\Desktop\IPR\IPR\Client\obj\Debug\Client.KettlerStats.resources
 C:\Users\jeffrey\Desktop\IPR\IPR\Client\obj\Debug\Client.LoginClients.resources
 C:\Users\jeffrey\Desktop\IPR\IPR\Client\obj\Debug\Client.Properties.Resources.resources
 C:\Users\jeffrey\Desktop\IPR\IPR\Client\obj\Debug\Client.csproj.GenerateResource.Cache
 C:\Users\jeffrey\Desktop\IPR\IPR\Client\obj\Debug\Client.csproj.CoreCompileInputs.cache
 C:\Users\jeffrey\Desktop\IPR\IPR\Client\obj\Debug\Client.exe
 C:\Users\jeffrey\Desktop\IPR\IPR\Client\obj\Debug\Client.pdb
+C:\Users\jeffrey\Desktop\IPR\IPR\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache

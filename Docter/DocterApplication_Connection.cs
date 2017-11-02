@@ -15,16 +15,16 @@ using Client;
 
 namespace Docter
 {
-    class DocterApplication_Connection
+    public class DocterApplication_Connection
     {
-        private bool _SSL = false;
-        readonly SslStream _sslStream;
         readonly NetworkStream _stream;
         int port = 1234;
         TcpClient client;
         IPAddress localhost;
         Boolean isConnected;
         private DocterForm DForm;
+        private TrainingHandler trainingHandler;
+        private List<TrainingItem> listTraining = new List<TrainingItem>();
 
 
         public DocterApplication_Connection(string user, string password)
@@ -35,20 +35,18 @@ namespace Docter
 
             client = new TcpClient(localhost.ToString(), port);
             _stream = client.GetStream();
-            if (_SSL)
-            {
-                _sslStream = new SslStream(_stream, false, new RemoteCertificateValidationCallback(ValidateCert));
-                _sslStream.AuthenticateAsClient("Healthcare", null, System.Security.Authentication.SslProtocols.Tls12,
-                    false);
-            }
             isConnected = true;
             Thread read = new Thread(Read);
             read.Start();
             sendLogin(user, password);
         }
 
-        //Read from Server
-        #region
+        public void setDForm(DocterForm form)
+        {
+            DForm = form;
+            trainingHandler = new TrainingHandler(DForm, this);
+        }
+
         public void Read()
         {
             while (isConnected)
@@ -63,7 +61,7 @@ namespace Docter
 
                     do
                     {
-                        int numberOfBytesRead = _SSL ? _sslStream.Read(receiveBuffer, 0, receiveBuffer.Length) : _stream.Read(receiveBuffer, 0, receiveBuffer.Length);
+                        int numberOfBytesRead = _stream.Read(receiveBuffer, 0, receiveBuffer.Length);
                         totalBytesreceived += numberOfBytesRead;
                         string received = Encoding.ASCII.GetString(receiveBuffer, 0, numberOfBytesRead);
                         response.AppendFormat("{0}", received);
@@ -86,14 +84,7 @@ namespace Docter
                         }
                     }
                     while (!messagereceived);
-                    if (_SSL)
-                    {
-                        _sslStream.Flush();
-                    }
-                    else
-                    {
-                        _stream.Flush();
-                    }
+                    _stream.Flush();
 
                     string toReturn = response.ToString().Substring(4);
                     System.Diagnostics.Debug.WriteLine("Received: \r\n" + toReturn);
@@ -107,15 +98,11 @@ namespace Docter
                 }
             }
         }
-        #endregion
 
-        //Processs answer from Server
-        #region
         public void ProcessAnswer(string information)
         {
-
             dynamic jsonData = JsonConvert.DeserializeObject(information);
-            //Console.WriteLine(jsonData.id);
+
             if (jsonData.id == "doctor/sessions")
             {
 
@@ -128,45 +115,35 @@ namespace Docter
             }
             else if (jsonData.id == "doctor/Client")
             {
-                Console.WriteLine(jsonData);
+                //Console.WriteLine(jsonData);
                 string user = (string)jsonData.data.username;
                 int age = (int)jsonData.data.age;
                 Sex sex = jsonData.data.sex;
-                ClientInfo tempInfo = new ClientInfo(user, age, sex);
+                int weight = (int) jsonData.data.weight;
+                ClientInfo tempInfo = new ClientInfo(user, age, sex,weight);
+                trainingHandler.CInfo = tempInfo;
                 DForm.updateClientInfo(tempInfo);
             }
             else if (jsonData.id == "data")
             {
+                string user = jsonData.sessionId;
+                dynamic jsonObjectHealth = jsonData.data.data;
 
-                string session = (string)jsonData.sessionId;
-                int power = jsonData.data.data.Requested_Power;
-                double speed = jsonData.data.data.Speed;
-                int time = jsonData.data.data.Time;
-                int rpm = jsonData.data.data.RPM;
-                double distance = jsonData.data.data.Distance;
-                int pulse = jsonData.data.data.Pulse;
+                HealthData tempHealth = new HealthData((byte)jsonObjectHealth.Heartbeat, (int)jsonObjectHealth.Rpm, (int)jsonObjectHealth.Speed, (float)jsonObjectHealth.Distance, (short)jsonObjectHealth.RequestedPower, (float)jsonObjectHealth.Energy, (int)jsonObjectHealth.Time, (short)jsonObjectHealth.ActualPower, (string)jsonObjectHealth.SessionId);
+                TrainingItem tempItem = trainingHandler.MakeTrainingsItem(tempHealth);
 
-
-                //ErgometerData data = new ErgometerData(pulse, rpm, speed, distance, time, 0, 0, power);
-                //UpdateDataFromSession(session, data);
+                
+                trainingHandler.handleTraining(tempItem);
+                listTraining.Add(tempItem);
 
             }
             else if (jsonData.id == "doctor/UnfollowPatient")
             {
 
             }
-            else if (jsonData.id == "Doctor/StartAstrand")
-            {
-                if (jsonData.data.status == "ok")
-                {
-                    new Thread(() => { MessageBox.Show("Ästrand test gestart"); }).Start();
-                }
-            }
+            
         }
-        #endregion
 
-        //Send to Server
-        #region
         public void Send(string message)
         {
             System.Diagnostics.Debug.WriteLine("Send: \r\n" + message);
@@ -175,19 +152,9 @@ namespace Docter
             byte[] buffer = new Byte[prefixArray.Length + message.Length];
             prefixArray.CopyTo(buffer, 0);
             requestArray.CopyTo(buffer, prefixArray.Length);
-            if (_SSL)
-            {
-                _sslStream.Write(buffer, 0, buffer.Length);
-            }
-            else
-            {
-                _stream.Write(buffer, 0, buffer.Length);
-            }
+            _stream.Write(buffer, 0, buffer.Length);
         }
-        #endregion
 
-        //Send login to Server
-        #region
         public void sendLogin(string username, string password)
         {
             dynamic sendLogin = new
@@ -202,10 +169,7 @@ namespace Docter
             };
             Send(JsonConvert.SerializeObject(sendLogin));
         }
-        #endregion
 
-        //Get ClientInfo
-        #region
         public void getClientInfo(string username)
         {
             dynamic getInfo = new
@@ -218,10 +182,7 @@ namespace Docter
             };
             Send(JsonConvert.SerializeObject(getInfo));
         }
-        #endregion
 
-        //Start training from client
-        #region
         public void startTraining(string patientID)
         {
             dynamic startTraining = new
@@ -231,15 +192,11 @@ namespace Docter
                 {
                     patientId = patientID
                 }
-
             };
 
             Send(JsonConvert.SerializeObject(startTraining));
         }
-        #endregion
 
-        //Stop training from client
-        #region
         public void stopTraining(String patientID)
         {
             dynamic stopTraining = new
@@ -255,11 +212,22 @@ namespace Docter
             };
             Send(JsonConvert.SerializeObject(stopTraining));
         }
-        #endregion
 
-        //Send message to client
-        #region
-        public void sendMessageToClient(String message, String patientID)
+        public void sendAstrandInfo(dynamic jsonObject,string user)
+        {
+            dynamic listTrain = new
+            {
+                id = "session/write",
+                name = user,
+                data = new
+                {
+                    list = listTraining.ToArray()
+                }
+            };
+            Send(JsonConvert.SerializeObject(jsonObject));
+        }
+
+        public void sendMessageToClient(string message, string patientID)
         {
             dynamic sendMessageToClient = new
             {
@@ -268,35 +236,12 @@ namespace Docter
                 {
                     messageId = message,
                     patientiD = patientID
-
-
                 }
 
             };
             Send(JsonConvert.SerializeObject(sendMessageToClient));
         }
-        #endregion
 
-        //Send message to all clients
-        #region
-        public void sendMessagetoAllClients(String message)
-        {
-            dynamic sendMessageToAllClients = new
-            {
-                id = "doctor/message/toAll",
-                data = new
-                {
-                    messageId = message,
-
-                }
-
-            };
-            Send(JsonConvert.SerializeObject(sendMessageToAllClients));
-        }
-        #endregion
-
-        //Set power from client
-        #region
         public void setPower(string power, string username)
         {
             dynamic setPower = new
@@ -311,10 +256,7 @@ namespace Docter
             };
             Send(JsonConvert.SerializeObject(setPower));
         }
-        #endregion
 
-        //Get session list
-        #region
         public void getSessions()
         {
             dynamic getSessions = new
@@ -324,10 +266,7 @@ namespace Docter
             };
             Send(JsonConvert.SerializeObject(getSessions));
         }
-        #endregion
 
-        //Follow patient
-        #region
         public void FollowPatient(string SessionId)
         {
             dynamic followPatient = new
@@ -340,10 +279,7 @@ namespace Docter
             };
             Send(JsonConvert.SerializeObject(followPatient));
         }
-        #endregion
 
-        //Unfollow patient
-        #region
         public void UnFollowPatient(string SessionId)
         {
             dynamic unFollowPatient = new
@@ -357,45 +293,12 @@ namespace Docter
             };
             Send(JsonConvert.SerializeObject(unFollowPatient));
         }
-        #endregion
 
-        //Close connection
-        #region
         public void close()
         {
-            if (!_SSL)
-            {
-                _stream.Close();
-            }
-            else
-            {
-                _sslStream.Close();
-            }
+            _stream.Close();
             client.Close();
         }
-        #endregion
-
-        //Validate ssl certificate
-        #region
-        public static bool ValidateCert(object sender, X509Certificate certificate,
-              X509Chain chain, SslPolicyErrors sslPolicyErrors) => sslPolicyErrors == SslPolicyErrors.None;
-        #endregion
-
-        //Start Astrand test
-        #region
-        public void StartAstrand(string SessionId)
-        {
-            dynamic startAstrand = new
-            {
-                id = "doctor/StartAstrand",
-                data = new
-                {
-                    client = SessionId
-                }
-            };
-            Send(JsonConvert.SerializeObject(startAstrand));
-        }
-        #endregion
     }
 }
 

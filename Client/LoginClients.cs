@@ -22,7 +22,7 @@ namespace Client
             var username = txtUsername.Text;
             var password = txtPassword.Text;
             ClientConnection con = new ClientConnection(username,password);
-            new FormBikeControl(con).Show();
+            new ClientForm(con).Show();
             this.Hide();
         }
     }

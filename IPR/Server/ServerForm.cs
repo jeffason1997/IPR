@@ -18,8 +18,6 @@ namespace IPR
     public partial class ServerForm : Form
     {
         public static List<Session> sessions { get; set; }
-        static int port = 1234;
-        private Thread Server = null;
 
         public ServerForm()
         {
