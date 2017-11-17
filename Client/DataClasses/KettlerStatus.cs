@@ -7,6 +7,10 @@ namespace Client
     {
         public KettlerStatus(string msg, string guid)
         {
+            if (msg.Length < 10)
+            {
+                return;
+            }
             var data = msg.TrimEnd('\r').Split('\t');
             Heartbeat = byte.Parse(data[0]);
             Rpm = int.Parse(data[1]);

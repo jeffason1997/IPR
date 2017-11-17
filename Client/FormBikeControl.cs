@@ -14,10 +14,12 @@ namespace Client
     public partial class FormBikeControl : Form
     {
         private string _com = "SIM";
+        private ClientForm CForm;
 
-        public FormBikeControl()
+        public FormBikeControl(ClientForm form)
         {
             InitializeComponent();
+            CForm = form;
             comPortComboBox.Items.Add("SIM");
             string[] coms = SerialPort.GetPortNames();
             foreach (string port in coms)
@@ -28,7 +30,16 @@ namespace Client
 
         private void button1_Click(object sender, EventArgs e)
         {
+            CForm.SetComPort(_com);
             //Console.WriteLine("The com port is:" + _com);
+            if (CForm == null)
+            {
+
+            } else
+            {
+                CForm.Show();
+            }
+            
             this.Hide();
         }
 

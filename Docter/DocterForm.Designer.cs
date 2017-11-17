@@ -155,7 +155,6 @@
             this.bikeSettingsToolStripMenuItem.Name = "bikeSettingsToolStripMenuItem";
             this.bikeSettingsToolStripMenuItem.Size = new System.Drawing.Size(102, 24);
             this.bikeSettingsToolStripMenuItem.Text = "BikeSettings";
-            this.bikeSettingsToolStripMenuItem.Click += new System.EventHandler(this.bikeSettingsToolStripMenuItem_Click);
             // 
             // StartButton
             // 

@@ -13,7 +13,7 @@ namespace Client
     public partial class ClientForm : Form
     {
         private ClientConnection _con;
-        private FormBikeControl bikeControl = new FormBikeControl();
+        public FormBikeControl bikeControl { get; }
         public ClientInfo CInfo;
 
         public ClientForm(ClientConnection con)
@@ -24,11 +24,17 @@ namespace Client
             _con.setClientForm(this);
             _con.getClientInfo();
             kettlerStats1.setForm(this);
+            bikeControl = new FormBikeControl(this);
         }
 
         public ClientConnection getConn()
         {
             return _con;
+        }
+
+        public void SetComPort(string com)
+        {
+            _con.setCom(com);
         }
 
         private void bikeConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
@@ -49,7 +55,7 @@ namespace Client
         {
             textBox1.Invoke(new Action(() =>
             {
-                textBox1.AppendText(message + "\n");
+                textBox1.AppendText("- " + message + "\n");
             }));
         }
 

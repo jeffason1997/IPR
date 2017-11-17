@@ -18,7 +18,6 @@ namespace Docter
 {
     public partial class DocterForm : Form
     {
-        private FormBikeControl BikeControl = new FormBikeControl();
         private DocterApplication_Connection connection;
         public string user;
         private List<Tab> tabs = new List<Tab>();
@@ -72,11 +71,6 @@ namespace Docter
             }));
         }
 
-        private void bikeSettingsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            BikeControl.Show();
-        }
-
         public void UpdateComboBox(List<String> new_Connected_Sessions)
         {
             comboBox1.Invoke(new Action(() =>
@@ -96,7 +90,7 @@ namespace Docter
         {
             textBox1.Invoke(new Action(() =>
             {
-                textBox1.AppendText(message+"\n");
+                textBox1.AppendText("- "+message+"\n");
             }));
         }
 

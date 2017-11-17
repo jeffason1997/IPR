@@ -27,7 +27,7 @@ namespace Client
         private IConnector _conn;
         private FormBikeControl _bikeControl;
         private ClientForm CForm;
-        private string Username;
+        private string Username, com;
 
 
 
@@ -54,6 +54,12 @@ namespace Client
         public void setClientForm(ClientForm form)
         {
             CForm = form;
+            _bikeControl = CForm.bikeControl;
+        }
+
+        public void setCom(string _com)
+        {
+            com = _com;
         }
 
         public void setBikeControl(FormBikeControl form)
@@ -133,7 +139,7 @@ namespace Client
             {
                 string user = jsonData.data.sessionID;
                 CurrentSessionId = Guid.NewGuid().ToString();
-                string com = _bikeControl.GetCom();
+                ;
                 if (com == "SIM")
                     _conn = new FakeConnector();
                 else
@@ -146,7 +152,11 @@ namespace Client
                     _conn.Reset();
                     Thread.Sleep(1000);
                     _conn.GetId((msg) =>
-                    GetData(user));
+                    {
+                        Console.WriteLine("boiy");
+                    }
+                    );
+                    GetData(user);
                 });
             }
             if (jsonData.id == "session/end")
@@ -224,18 +234,23 @@ namespace Client
                     System.Diagnostics.Debug.WriteLine(isConnected);
                     _conn.GetStats(msg =>
                     {
-                        var status = new KettlerStatus(msg, CurrentSessionId);
-                        CForm.updateKettlerStats(status);
-                        dynamic KettlerData = new
+                        if (msg.Length > 10)
                         {
-                            id = "data",
-                            session = user,
-                            data = new
+
+
+                            var status = new KettlerStatus(msg, CurrentSessionId);
+                            CForm.updateKettlerStats(status);
+                            dynamic KettlerData = new
                             {
-                                status = status
-                            }
-                        };
-                        Send(JsonConvert.SerializeObject(KettlerData));
+                                id = "data",
+                                session = user,
+                                data = new
+                                {
+                                    status = status
+                                }
+                            };
+                            Send(JsonConvert.SerializeObject(KettlerData));
+                        }
                     });
                 }
             });

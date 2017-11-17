@@ -161,11 +161,11 @@ namespace Docter
             int i = (int)item.ThisType;
             Cform.updateKettlerStats(item);
 
-            /*if (HFAboveMaximum(item.Status.Heartbeat))
+           if (HFAboveMaximum(item.Status.Heartbeat))
             {
                 MaxHeartbeat = true;
                 _con.stopTraining(CInfo.UserName);
-            }*/
+            }
 
 
             switch (i)
@@ -200,6 +200,11 @@ namespace Docter
         {
             if (firstTime)
             {
+                Cform.updateTextBox("First you will have 2 minutes of Warming up.");
+                Cform.updateTextBox("Then you will have 4 minutes of Real Training.");
+                Cform.updateTextBox("If you didn't reacht steady state you wil have 2 minutes of Extended Training until you reacht it.");
+                Cform.updateTextBox("And finnaly you will have 1 minute Cooldown.");
+
                 Cform.updateTextBox("The warming up will start now.");
                 Cform.updateTextBox("The wattage of the bike will be set on 50");
                 Cform.updateTextBox($"Power has been set to{50}");
@@ -223,10 +228,21 @@ namespace Docter
                 firstTime = false;
             }
 
-            if (time % 3 == 0 && item.Status.Heartbeat < 130 && item.Status.Rpm >= 50 && item.Status.Rpm <= 60)
+            if (time % 3 == 0 && item.Status.Heartbeat < 130)
             {
-                int newPower = item.Status.ActualPower + 5;
-                Cform.updateTextBox($"Power has been set to{newPower}");
+                if (item.Status.Rpm >= 50 && item.Status.Rpm <= 6)
+                {
+                    int newPower = item.Status.ActualPower + 5;
+                    Cform.updateTextBox($"Power has been set to{newPower}");
+                }
+                else if (item.Status.Rpm < 50)
+                {
+                    sendMessage("Go Faster Please");
+                }
+                else if (item.Status.Rpm > 60)
+                {
+                    sendMessage("Slow Down Please");
+                }
             }
 
             if (time <= 180)
@@ -268,10 +284,21 @@ namespace Docter
                 firstTime = false;
             }
 
-            if (time % 3 == 0 && item.Status.Heartbeat < 130 && item.Status.Rpm >= 50 && item.Status.Rpm <= 60)
+            if (time % 3 == 0 && item.Status.Heartbeat < 130)
             {
-                int newPower = item.Status.ActualPower + 5;
-                Cform.updateTextBox($"Power has been set to{newPower}");
+                if (item.Status.Rpm >= 50 && item.Status.Rpm <= 6)
+                {
+                    int newPower = item.Status.ActualPower + 5;
+                    Cform.updateTextBox($"Power has been set to{newPower}");
+                }
+                else if (item.Status.Rpm < 50)
+                {
+                    sendMessage("Go Faster Please");
+                }
+                else if (item.Status.Rpm > 60)
+                {
+                    sendMessage("Slow Down Please");
+                }
             }
 
             if (time % 15 == 0)

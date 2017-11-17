@@ -19,7 +19,7 @@ namespace Client
         private int counter = 0;
         public ClientForm CForm;
         private bool SteadyState = false;
-        private bool justWent = false;
+        private bool justWent = true;
 
         public KettlerStats()
         {
@@ -33,27 +33,39 @@ namespace Client
 
         public void Messagesing(int time)
         {
-            if (time == 0)
+            if (time == 0 && justWent)
             {
+                sendMessage("First you will have 2 minutes of Warming up.");
+                sendMessage("Then you will have 4 minutes of Real Training.");
+                sendMessage("If you didn't reacht steady state you wil have 2 minutes of Extended Training until you reacht it.");
+                sendMessage("And finnaly you will have 1 minute Cooldown.");
                 sendMessage("The warming up will start now.");
                 sendMessage("The wattage of the bike will be set on 50");
                 updatePower(50);
+                justWent = false;
             }
-            else if (time == 121)
+            else if (time == 121 && justWent)
             {
                 sendMessage("The warming up is now finished, the real test starts now.");
                 sendMessage("Try to get between 50 and 60 rpm");
+                justWent = false;
             }
-            else if (time >= 361 && type == TypeOfTraining.ExtendedTraining && time % 120 == 1)
+            else if (time >= 361 && type == TypeOfTraining.ExtendedTraining && time % 120 == 1 && justWent)
             {
                 sendMessage("You didn't make the steady state so you get 2 minutes of extended training");
                 sendMessage("Try to get between 50 and 60 rpm");
+                justWent = false;
             }
-            else if (time >= 361 && type == TypeOfTraining.CoolingDown && time % 120 == 1)
+            else if (time >= 361 && type == TypeOfTraining.CoolingDown && time % 120 == 1 && justWent)
             {
                 sendMessage("You've completed the training, the cooling down will begin now");
                 sendMessage("The wattage of the bike will be set on 50");
                 updatePower(50);
+                justWent = false;
+            }
+            else if (!justWent&&time>5)
+            {
+                justWent = true;
             }
 
             if (justWent && SteadyState)
@@ -80,10 +92,26 @@ namespace Client
                 counter = 0;
             }
 
-            if (item.Time % 3 == 0 && item.Heartbeat < 130 && item.Rpm >= 50 && item.Rpm <= 60)
+            if (type == TypeOfTraining.ExtendedTraining || type == TypeOfTraining.RealTraining)
             {
-                int newPower = item.ActualPower + 5;
-                updatePower(newPower);
+
+                if (item.Time % 3 == 0 && item.Heartbeat < 130 && justWent)
+                {
+                    if (item.Rpm >= 50 && item.Rpm <= 6)
+                    {
+                        int newPower = item.ActualPower + 5;
+                        updatePower(newPower);
+                        justWent = false;
+                    }
+                    else if (item.Rpm < 50)
+                    {
+                        sendMessage("Go Faster Please");
+                    }
+                    else if (item.Rpm > 60)
+                    {
+                        sendMessage("Slow Down Please");
+                    }
+                }
             }
 
         }
@@ -96,7 +124,7 @@ namespace Client
         private void updatePower(int power)
         {
             CForm.getConn().setPower(power);
-            sendMessage($"Power has been set to {power}");
+            //sendMessage($"Power has been set to {power}");
         }
 
         public TypeOfTraining getType(int time, short actualpower)
